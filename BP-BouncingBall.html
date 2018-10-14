@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        canvas{
+            border: solid 1px black;
+        }
+    </style>
+</head>
+<body>
+<button onclick="move()">Start</button>
+<button onclick="stop()">Stop</button>
+<br/>
+<canvas id="myCanvas" width="600" height="400"></canvas>
+
+    <script>
+        const DIAGONAL_TOP_RIGHT = 1;
+        const DIAGONAL_TOP_LEFT = 2;
+        const DIAGONAL_BOTTOM_RIGHT = 3;
+        const DIAGONAL_BOTTOM_LEFT = 4;
+        const RADIUS = 40;
+        const WIDTH = 600;
+        const HEIGHT = 400;
+        function Ball(x,y) {
+            this.x = x;
+            this.y = y;
+            this.direction = DIAGONAL_TOP_RIGHT;
+
+            this.getRandomColor = function () {
+                var red = Math.floor(Math.random()*255);
+                var green = Math.floor(Math.random()*255);
+                var blue = Math.floor(Math.random()*255);
+                return "rgb(" + red + "," + blue + "," + green +")";
+            }
+            this.renderBall = function (canvas,color) {
+                var context = canvas.getContext('2d');
+                context.clearRect(0,0,WIDTH,HEIGHT);
+                context.beginPath();
+                context.arc(this.x,this.y,RADIUS,0,2*Math.PI);
+                context.fillStyle = color;
+                context.fill();
+            }
+
+            this.move = function () {
+                if (this.direction == DIAGONAL_TOP_RIGHT){
+                    this.x += 20;
+                    this.y -= 10;
+                    if (this.y <= RADIUS){
+                        this.direction = DIAGONAL_BOTTOM_RIGHT;
+                    }else if (this.x >= WIDTH - RADIUS){
+                        this.direction = DIAGONAL_TOP_LEFT;
+                    }
+                }else if (this.direction == DIAGONAL_BOTTOM_RIGHT){
+                    this.x += 10;
+                    this.y += 10;
+                    if (this.x >= WIDTH - RADIUS){
+                        this.direction = DIAGONAL_BOTTOM_LEFT;
+                    }else if (this.y >= HEIGHT - RADIUS){
+                        this.direction = DIAGONAL_TOP_RIGHT;
+                    }
+                }else if (this.direction == DIAGONAL_BOTTOM_LEFT){
+                    this.x -= 10;
+                    this.y += 10;
+                    if (this.y >= HEIGHT - RADIUS){
+                        this.direction = DIAGONAL_TOP_LEFT;
+                    }else if (this.x <= RADIUS){
+                        this.direction = DIAGONAL_BOTTOM_RIGHT;
+                    }
+                }else  if (this.direction == DIAGONAL_TOP_LEFT){
+                    this.x -= 20;
+                    this.y -= 10;
+                    if (this.x <= RADIUS ){
+                        this.direction = DIAGONAL_TOP_RIGHT;
+                    }else if (this.y <= RADIUS){
+                        this.direction = DIAGONAL_BOTTOM_LEFT;
+                    }
+                }
+            }
+        }
+        var canvas = document.getElementById('myCanvas');
+        var ball = new Ball(100,200);
+        ball.renderBall(canvas,ball.getRandomColor());
+
+        var myMove;
+        function move() {
+            myMove = setInterval(function () {
+                ball.move();
+                ball.renderBall(canvas,ball.getRandomColor());
+            },30);
+        }
+        function stop() {
+            clearInterval(myMove);
+        }
+    </script>
+</body>
+</html>
